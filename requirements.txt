@@ -11,3 +11,4 @@ google-auth-oauthlib
 XlsxWriter
 lightgbm
 Prophet
+scikit-learn
