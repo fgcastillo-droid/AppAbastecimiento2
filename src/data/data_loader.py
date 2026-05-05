@@ -11,11 +11,6 @@ import requests # para el notion
 import requests
 import pandas as pd
 
-
-BASE_URL = "https://data-api-f7y55nboxq-uc.a.run.app"
-CLIENT_ID = "abastecimiento_app"
-CLIENT_SECRET = "0QPwdt6rPjnlUuRdpVYKeCqy6qOxVZv5"
-
 # --- FUNCIÓN 1: OBTENER TOKEN ---
 def obtener_token(client_id, client_secret, base_url):
     """Va a la API, se identifica y devuelve el pase VIP temporal."""
@@ -150,12 +145,16 @@ def _load_all_data():
         
     # --- Carga de C&I y Residencial mediante API REST ---
     try:
-        api_token = obtener_token(CLIENT_ID, CLIENT_SECRET, BASE_URL)
+        api_base_url = st.secrets["api"]["base_url"]
+        api_client_id = st.secrets["api"]["client_id"]
+        api_client_secret = st.secrets["api"]["client_secret"]
+        
+        api_token = obtener_token(api_client_id, api_client_secret, api_base_url)
         # NOTA: Cambia "residencial" por el nombre exacto de tu endpoint si es diferente (ej. "bdtotal", "proyectos")
         # Si C&I viene en un endpoint separado, puedes hacer otro descargar_tabla y concatenar ambos DataFrames con pd.concat()
-        df_residencial_raw = descargar_tabla(BASE_URL, "planilla-master", api_token)
+        df_residencial_raw = descargar_tabla(api_base_url, "planilla-master", api_token)
     except Exception as e:
-        print(f"Error al cargar datos de C&I/Residencial desde la API: {e}")
+        print(f"Error al cargar datos de C&I/Residencial desde la API (o faltan credenciales en secrets.toml): {e}")
         df_residencial_raw = pd.DataFrame()
 
     # Carga de archivos locales (CPU/Disco)
